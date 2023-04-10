@@ -2,13 +2,13 @@ public class Student {
     private String fName;
     private String sName;
     private String dob;
-    private char gender;
+    private String gender;
     private String studyMode;
     private int year;
     private int numModules;
     private double tuitionFee;
 
-    public Student(String fName, String sName, String dob, char gender, String studyMode, int year, int numModules,
+    public Student(String fName, String sName, String dob, String gender, String studyMode, int year, int numModules,
             double tuitionFee) {
         this.fName = fName;
         this.sName = sName;
@@ -26,6 +26,30 @@ public class Student {
 
     public String getSecondName() {
         return sName;
+    }
+
+    public String getStudyMode() {
+        return studyMode;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public int getNumModules() {
+        return numModules;
+    }
+
+    public double getTuitionFee() {
+        return tuitionFee;
     }
 
     public void displayDetails() {

@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class enrolementRegister {
@@ -5,6 +7,7 @@ public class enrolementRegister {
     private int studentCount = 0;
     private Student[] students = new Student[MAX_STUDENTS];
     private Scanner ip = new Scanner(System.in);
+    private String courseName = "Computer Science";
 
     public static void main(String[] args) throws Exception {
         enrolementRegister myEnrolementRegister = new enrolementRegister();
@@ -15,13 +18,52 @@ public class enrolementRegister {
         this.menu();
     }
 
+    private void saveCourseDetails() {
+        // Writing to course details file
+        try (PrintWriter courseWriter = new PrintWriter("CourseDetails.txt")) {
+            courseWriter.println("Course Name: " + courseName);
+            courseWriter.println("Maximum number of students: " + MAX_STUDENTS);
+        } catch (IOException e) {
+            System.out.println("Error writing to CourseDetails.txt");
+            e.printStackTrace();
+        }
+    }
+
+    private void saveStudentDetails() {
+        // writing to student details file
+        try (PrintWriter studentwriter = new PrintWriter("StudentDetails.txt")) {
+            for (int i = 0; i < students.length; i++) {
+                Student student = students[i];
+                if (student != null) {
+                    studentwriter.println("First Name: " + student.getFirstName());
+                    studentwriter.println("Second Name: " + student.getSecondName());
+                    studentwriter.println("Date of Birth: " + student.getDob());
+                    studentwriter.println("Gender: " + student.getGender());
+                    studentwriter.println("Study Mode: " + student.getStudyMode());
+                    studentwriter.println("Student Year: " + student.getYear());
+                    studentwriter.println("Number of Modules to be taken: " + student.getNumModules());
+                    studentwriter.println("Tuition Fee: " + student.getTuitionFee());
+                    studentwriter.println();
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error writing to StudentDetails.txt");
+            e.printStackTrace();
+        }
+
+    }
+
     private void menu() {
         while (true) {
-            System.out.println("\nCourse Enrollement System");
+            System.out.println("\n----------------------------------");
+            System.out.println("Course Enrollement System");
             System.out.println("1. Enroll Student");
             System.out.println(("2. View Student details"));
             System.out.println("3. Delete Student");
-            System.out.println("4. Exit");
+            System.out.println("4. Generate Report");
+            System.out.println("5. Exit");
+            System.out.println("---------------------------------");
             System.out.println("Enter your choice: ");
             int choice = ip.nextInt();
 
@@ -36,6 +78,11 @@ public class enrolementRegister {
                     deleteStudent(ip);
                     break;
                 case 4:
+                    generateReport(ip);
+                    break;
+                case 5:
+                    saveCourseDetails();
+                    saveStudentDetails();
                     System.out.println("\nProgram Terminating...");
                     System.exit(0);
                     break;
@@ -46,6 +93,7 @@ public class enrolementRegister {
     }
 
     private void enrollStudent(Scanner ip) {
+
         if (studentCount == MAX_STUDENTS) {
             System.out.println("\nSorry! The maximum number of students have already been enrolled.");
             return;
@@ -58,13 +106,20 @@ public class enrolementRegister {
         System.out.println("Enter Student Date of Birth: ");
         String dob = ip.next();
         System.out.println("Enter Student Gender (M/F): ");
-        char gender = ip.next().charAt(0);
+        String gender = ip.next();
         System.out.println("Enter Student Study Mode (PT/FT): ");
         String studyMode = ip.next();
         System.out.println("Enter Student Year (1-4): ");
         int year = ip.nextInt();
         System.out.println("Enter Number of Modules to be taken (1-6): ");
         int numModules = ip.nextInt();
+
+        if (fName.equals("") || sName.equals("") || dob.equals("") || studyMode.equals("") ||
+                (gender != "M" && gender != "F") || year < 1 || year < 2 || year < 3 || year > 4 || numModules < 1
+                || numModules > 6) {
+            System.out.println("Error! All fields are required to enroll.");
+            return;
+        }
 
         double tuitionFee = calculateTuitionFee(studyMode, year, numModules);
 
@@ -80,11 +135,13 @@ public class enrolementRegister {
             return;
         }
 
-        System.out.println("\nEnter Student Name: ");
-        String name = ip.next();
+        System.out.println("\nEnter Student First Name: ");
+        String fName = ip.next();
+        System.out.println("Enter Student Second Name: ");
+        String sName = ip.next();
 
         for (int i = 0; i < studentCount; i++) {
-            if (students[i].getFirstName().equals(name)) {
+            if (students[i].getFirstName().equals(fName) && students[i].getSecondName().equals(sName)) {
                 students[i].displayDetails();
                 return;
             }
@@ -96,13 +153,13 @@ public class enrolementRegister {
     private double calculateTuitionFee(String studyMode, int year, int numModules) {
         double tuitionFee = 0;
 
-        if (studyMode.equals(("FT"))) {
+        if (studyMode.equalsIgnoreCase(("FT"))) {
             if (year == 3) {
                 tuitionFee = 2500;
             } else {
                 tuitionFee = 5000;
             }
-        } else if (studyMode.equals(("PT"))) {
+        } else if (studyMode.equalsIgnoreCase(("PT"))) {
             tuitionFee = numModules * 750;
         }
 
@@ -130,5 +187,54 @@ public class enrolementRegister {
                 return;
             }
         }
+    }
+
+    private void generateReport(Scanner ip) {
+        int numFT = 0;
+        int numPT = 0;
+        for (int i = 0; i < MAX_STUDENTS; i++) {
+            if (students[i] != null) {
+                if (students[i].getStudyMode().equals("FT")) {
+                    numFT++;
+                } else {
+                    numPT++;
+                }
+            }
+        }
+
+        int numFTMale = 0;
+        int numPTMale = 0;
+        int numFTFemale = 0;
+        int numPTFemale = 0;
+        for (int i = 0; i < MAX_STUDENTS; i++) {
+            if (students[i] != null) {
+                if (students[i].getStudyMode().equalsIgnoreCase("FT")) {
+                    if (students[i].getGender().equalsIgnoreCase("M")) {
+                        numFTMale++;
+                    } else {
+                        numFTFemale++;
+                    }
+                } else {
+                    if (students[i].getGender().equalsIgnoreCase("M")) {
+                        numPTMale++;
+                    } else {
+                        numPTFemale++;
+                    }
+                }
+            }
+        }
+        double percentageFTMale = (double) numFTMale / numFT * 100;
+        double percentageFTFemale = (double) numFTFemale / numFT * 100;
+        double percentagePTMale = (double) numPTMale / numPT * 100;
+        double percentagePTFemale = (double) numPTFemale / numPT * 100;
+
+        System.out.println("Course Name: " + courseName);
+        System.out.println("Total number of students enrolled: " + studentCount);
+        System.out.println("Number of Full Time students: " + numFT);
+        System.out.println("  Male: " + numFTMale + " (" + percentageFTMale + "%)");
+        System.out.println("  Female: " + numFTFemale + " (" + percentageFTFemale + "%)");
+        System.out.println("Number of PT students: " + numPT);
+        System.out.println("  Male: " + numPTMale + " (" + percentagePTMale + "%)");
+        System.out.println("  Female: " + numPTFemale + " (" + percentagePTFemale + "%)");
     }
 }

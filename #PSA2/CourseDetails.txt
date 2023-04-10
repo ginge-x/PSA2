@@ -1,0 +1,2 @@
+Course Name: Computer Science
+Maximum number of students: 20

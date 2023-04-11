@@ -1,5 +1,3 @@
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class enrolementRegister {
@@ -16,42 +14,6 @@ public class enrolementRegister {
 
     private void start() {
         this.menu();
-    }
-
-    private void saveCourseDetails() {
-        // Writing to course details file
-        try (PrintWriter courseWriter = new PrintWriter("CourseDetails.txt")) {
-            courseWriter.println("Course Name: " + courseName);
-            courseWriter.println("Maximum number of students: " + MAX_STUDENTS);
-        } catch (IOException e) {
-            System.out.println("Error writing to CourseDetails.txt");
-            e.printStackTrace();
-        }
-    }
-
-    private void saveStudentDetails() {
-        // writing to student details file
-        try (PrintWriter studentwriter = new PrintWriter("StudentDetails.txt")) {
-            for (int i = 0; i < students.length; i++) {
-                Student student = students[i];
-                if (student != null) {
-                    studentwriter.println("First Name: " + student.getFirstName());
-                    studentwriter.println("Second Name: " + student.getSecondName());
-                    studentwriter.println("Date of Birth: " + student.getDob());
-                    studentwriter.println("Gender: " + student.getGender());
-                    studentwriter.println("Study Mode: " + student.getStudyMode());
-                    studentwriter.println("Student Year: " + student.getYear());
-                    studentwriter.println("Number of Modules to be taken: " + student.getNumModules());
-                    studentwriter.println("Tuition Fee: " + student.getTuitionFee());
-                    studentwriter.println();
-                }
-            }
-
-        } catch (IOException e) {
-            System.out.println("Error writing to StudentDetails.txt");
-            e.printStackTrace();
-        }
-
     }
 
     private void menu() {
@@ -81,8 +43,6 @@ public class enrolementRegister {
                     generateReport(ip);
                     break;
                 case 5:
-                    saveCourseDetails();
-                    saveStudentDetails();
                     System.out.println("\nProgram Terminating...");
                     System.exit(0);
                     break;
@@ -113,20 +73,20 @@ public class enrolementRegister {
         int year = ip.nextInt();
         System.out.println("Enter Number of Modules to be taken (1-6): ");
         int numModules = ip.nextInt();
-
-        if (fName.equals("") || sName.equals("") || dob.equals("") || studyMode.equals("") ||
-                (gender != "M" && gender != "F") || year < 1 || year < 2 || year < 3 || year > 4 || numModules < 1
-                || numModules > 6) {
-            System.out.println("Error! All fields are required to enroll.");
-            return;
-        }
-
         double tuitionFee = calculateTuitionFee(studyMode, year, numModules);
 
-        students[studentCount] = new Student(fName, sName, dob, gender, studyMode, year, numModules, tuitionFee);
-        studentCount++;
+        if (fName.equals("") || sName.equals("") || dob.equals("") || studyMode.equals("") ||
+                (gender != "M" && gender != "F") || year < 1 || year > 4 || numModules < 1
+                || numModules > 6) {
+            System.out.println("Error! All fields are required to enroll.");
+            // return;
+        } else {
+            students[studentCount] = new Student(fName, sName, dob, gender, studyMode, year, numModules, tuitionFee);
+            studentCount++;
 
-        System.out.println("\nStudent Enrolled Successfully!");
+            System.out.println("\nStudent Enrolled Successfully!");
+        }
+
     }
 
     private void viewStudentDetails(Scanner ip) {
